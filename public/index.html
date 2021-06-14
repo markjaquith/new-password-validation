@@ -12,7 +12,21 @@
       <div class="min-h-screen max-w-md mx-auto flex items-center justify-center">
          <div class="p-12 bg-gray-50 rounded-lg shadow">
             <h1 class="font-bold text-3xl">Set new password</h1>
-            <form action="" class="mt-6" x-data="{password: ''}">
+            <form action="" class="mt-6" x-data="{
+              password: '',
+              get enoughCharacters() {
+                return this.password.length >= 8
+              },
+              get hasUpper() {
+                return /[A-Z]/.test(this.password)
+              },
+              get hasNumber() {
+                return /[0-9]/.test(this.password)
+              },
+              get hasTypedSomething() {
+                return this.password.length > 0
+              }
+            }">
                <input
                   type="text"
                   placeholder="Password"
@@ -22,25 +36,25 @@
                <ul class="mt-4 ml-2 text-sm text-gray-500 space-y-2">
                   <li
                      :class="{
-								'text-red-600 font-medium invalid':password.length > 0 && password.length < 8,
-								'text-green-600 font-medium valid':password.length >= 8
-							}"
+                        'text-red-600 font-medium invalid': hasTypedSomething && !enoughCharacters,
+                        'text-green-600 font-medium valid': enoughCharacters,
+                     }"
                   >
                      Minimum 8 characters
                   </li>
                   <li
                      :class="{
-								'text-red-600 font-medium invalid':password.length > 0 && !/[A-Z]/.test(password),
-								'text-green-600 font-medium valid':/[A-Z]/.test(password)
-							}"
+                        'text-red-600 font-medium invalid': hasTypedSomething && !hasUpper,
+                        'text-green-600 font-medium valid': hasUpper,
+                     }"
                   >
                      At least 1 uppercase letter
                   </li>
                   <li
                      :class="{
-								'text-red-600 font-medium invalid':password.length > 0 && !/[0-9]/.test(password),
-								'text-green-600 font-medium valid':/[0-9]/.test(password)
-							}"
+                        'text-red-600 font-medium invalid': hasTypedSomething && !hasNumber,
+                        'text-green-600 font-medium valid': hasNumber,
+                     }"
                   >
                      At least 1 number
                   </li>
@@ -60,9 +74,7 @@
                      disabled:cursor-default
                      disabled:shadow-none
                   "
-                  :disabled="
-							!(password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password))
-						"
+                  :disabled="!(enoughCharacters && hasUpper && hasNumber)"
                >
                   Save changes
                </button>
